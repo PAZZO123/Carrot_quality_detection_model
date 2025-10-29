@@ -1,56 +1,37 @@
-# augment.py
-import os
-import cv2
-import numpy as np
-from tqdm import tqdm
 import random
+from torchvision import transforms
+from PIL import Image
+import pandas as pd
+from pathlib import Path
+import os
 
-SRC_DIR = "datasets"
-AUG_DIR = "dataset_aug"
-os.makedirs(AUG_DIR, exist_ok=True)
-AUG_PER_IMAGE = 1  # number of augmented copies per image
+# Augmentation pipeline
+augment = transforms.Compose([
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(20),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+    transforms.RandomResizedCrop((224,224), scale=(0.8,1.0))
+])
 
-def random_brightness(img, factor=0.15):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype('float32')
-    hsv[:,:,2] = hsv[:,:,2] * (1 + (random.uniform(-factor, factor)))
-    hsv[:,:,2] = np.clip(hsv[:,:,2], 0, 255)
-    out = cv2.cvtColor(hsv.astype('uint8'), cv2.COLOR_HSV2BGR)
-    return out
+# Output directory
+out_aug = Path("clean_data/augmented")
+out_aug.mkdir(exist_ok=True)
 
-def augment_image(img):
-    ops = []
-    # flip
-    if random.random() < 0.5:
-        img = cv2.flip(img, 1)
-    # rotate
-    angle = random.uniform(-15, 15)
-    (h, w) = img.shape[:2]
-    M = cv2.getRotationMatrix2D((w//2, h//2), angle, 1.0)
-    img = cv2.warpAffine(img, M, (w, h), borderMode=cv2.BORDER_REFLECT)
-    # brightness
-    if random.random() < 0.7:
-        img = random_brightness(img)
-    return img
+# Number of augmented images per original image
+n_aug_per_image = 3
 
-def run_augmentation():
-    for cls in os.listdir(SRC_DIR):
-        src_folder = os.path.join(SRC_DIR, cls)
-        dest_folder = os.path.join(AUG_DIR, cls)
-        os.makedirs(dest_folder, exist_ok=True)
-        for fname in tqdm(os.listdir(src_folder), desc=f"Aug {cls}"):
-            src_path = os.path.join(src_folder, fname)
-            img = cv2.imread(src_path)
-            if img is None:
-                continue
-            # copy original to augmented folder
-            cv2.imwrite(os.path.join(dest_folder, fname), img)
-            # produce augmentations
-            base, ext = os.path.splitext(fname)
-            for i in range(AUG_PER_IMAGE):
-                aug = augment_image(img)
-                out_name = f"{base}_aug{i}{ext}"
-                cv2.imwrite(os.path.join(dest_folder, out_name), aug)
+# Read manifest
+df = pd.read_csv("clean_data/manifest_labelled.csv")  # <- use your actual file
 
-if __name__ == "__main__":
-    run_augmentation()
-    print("Augmentation complete. Check dataset_aug folder.")
+for idx, row in df.iterrows():
+    p = row['orig_path']  # <- match your column
+    label = row['label']
+    im = Image.open(p).convert('RGB')
+    for i in range(n_aug_per_image):
+        aug_img = augment(im)
+        fname = f"{Path(p).stem}_aug{i}.jpg"
+        save_dir = out_aug / label
+        save_dir.mkdir(parents=True, exist_ok=True)
+        aug_img.save(save_dir / fname, quality=90)
+
+print("✅ Augmentation completed!")
