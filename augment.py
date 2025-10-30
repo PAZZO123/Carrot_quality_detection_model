@@ -5,7 +5,6 @@ import pandas as pd
 from pathlib import Path
 import os
 
-# Augmentation pipeline
 augment = transforms.Compose([
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.RandomRotation(20),
@@ -13,14 +12,9 @@ augment = transforms.Compose([
     transforms.RandomResizedCrop((224,224), scale=(0.8,1.0))
 ])
 
-# Output directory
 out_aug = Path("clean_data/augmented")
 out_aug.mkdir(exist_ok=True)
-
-# Number of augmented images per original image
 n_aug_per_image = 3
-
-# Read manifest
 df = pd.read_csv("clean_data/manifest_labelled.csv")  # <- use your actual file
 
 for idx, row in df.iterrows():
@@ -34,4 +28,4 @@ for idx, row in df.iterrows():
         save_dir.mkdir(parents=True, exist_ok=True)
         aug_img.save(save_dir / fname, quality=90)
 
-print("✅ Augmentation completed!")
+print(" Augmentation completed!")

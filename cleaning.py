@@ -1,3 +1,4 @@
+#cleaning.py
 import hashlib, os, pandas as pd
 from PIL import Image, UnidentifiedImageError
 from pathlib import Path
