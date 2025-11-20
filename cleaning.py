@@ -3,7 +3,7 @@ import hashlib, os, pandas as pd
 from PIL import Image, UnidentifiedImageError
 from pathlib import Path
 
-root = Path("datasets")
+root = Path("clean_data/augmented")
 out_root = Path("clean_data")
 out_root.mkdir(exist_ok=True)
 classes = ["GOOD","BAD"]

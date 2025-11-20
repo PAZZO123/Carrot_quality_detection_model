@@ -8,7 +8,7 @@ from PIL import Image
 # -------------------------------
 # STEP 1: Define root and classes
 # -------------------------------
-root = Path("datasets")   # Your dataset folder with GOOD/ and BAD/ subfolders
+root = Path("clean_data/augmented")   # Your dataset folder with GOOD/ and BAD/ subfolders
 classes = ["GOOD", "BAD"]
 
 # -------------------------------

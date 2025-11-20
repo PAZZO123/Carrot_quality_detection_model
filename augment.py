@@ -14,7 +14,7 @@ augment = transforms.Compose([
 
 out_aug = Path("clean_data/augmented")
 out_aug.mkdir(exist_ok=True)
-n_aug_per_image = 3
+n_aug_per_image = 20
 df = pd.read_csv("clean_data/manifest_labelled.csv")  # <- use your actual file
 
 for idx, row in df.iterrows():
