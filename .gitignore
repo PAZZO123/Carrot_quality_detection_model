@@ -1,0 +1,7 @@
+dataset_aug/
+datasets/
+output/
+clean_data/augmented/
+carrot_data1/
+carrot_data/
+models/
