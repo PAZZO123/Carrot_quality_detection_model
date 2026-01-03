@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 # -------------------------------
-# STEP 1: Define root and classes
+# STEP 1: Define root and classes as usual
 # -------------------------------
 root = Path("clean_data/augmented")   # Your dataset folder with GOOD/ and BAD/ subfolders
 classes = ["GOOD", "BAD"]
